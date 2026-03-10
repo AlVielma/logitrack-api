@@ -1,15 +1,169 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+
+  users User[]
+  @@map("roles")
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  firstName        String
+  lastName         String
+  password         String
+  roleId           Int
+  phone            String?
+  photoUrl         String?
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now()) 
+  updatedAt        DateTime  @updatedAt 
+  verificationCode String?
+
+  role             Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  
+  tripsCreated     Trip[]    @relation("OperatorTrips")
+
+  @@map("users")
+}
+
+model Client {
+  id           Int      @id @default(autoincrement())
+  businessName String
+  rfc          String   @unique
+  zipCode      String
+  phone        String?
+  address      String?
+  email        String?
+  photoUrl     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  trips        Trip[]
+
+  @@map("clients")
+}
+
+model Driver {
+  id            Int      @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  rfc           String   @unique
+  curp          String   @unique
+  nss           String?
+  sctLicense    String   @unique
+  licenseType   String
+  phone         String?
+  isActive      Boolean  @default(true)
+  status        DriverStatus @default(AVAILABLE)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  trips         Trip[]
+
+  @@map("drivers")
+}
+
+model Vehicle {
+  id                     Int       @id @default(autoincrement())
+  plate                  String    @unique
+  brand                  String?
+  model                  String?
+  capacity               Float?   
+  vehicleConfiguration   String?  
+  sctPermit              String?  
+  insuranceCompany       String?
+  insurancePolicy        String?
+  
+  isActive               Boolean   @default(true)
+  status                 VehicleStatus @default(AVAILABLE)
+
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  trips                  Trip[]
+  photos                 VehiclePhoto[]
+
+  @@map("vehicles")
+}
+
+model VehiclePhoto {
+  id         Int      @id @default(autoincrement())
+  url        String
+  vehicleId  Int
+  createdAt  DateTime @default(now())
+
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_photos")
+}
+
+model Trip {
+  id             Int       @id @default(autoincrement())
+  origin         String
+  originZipCode  String
+  destination    String
+  destZipCode    String
+  
+  cartaPorteUuid String?
+
+  scheduledDate  DateTime?
+  startDate      DateTime?
+  endDate        DateTime?
+  status         TripStatus @default(PENDING)
+  price          Float?
+
+  clientId       Int
+  client         Client    @relation(fields: [clientId], references: [id])
+
+  driverId       Int
+  driver         Driver    @relation(fields: [driverId], references: [id])
+
+  vehicleId      Int
+  vehicle        Vehicle   @relation(fields: [vehicleId], references: [id])
+
+  operatorId     Int?
+  operator       User?     @relation("OperatorTrips", fields: [operatorId], references: [id])
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("trips")
+}
+
+enum DriverStatus {
+  AVAILABLE
+  ON_TRIP
+  RESTING
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  ON_TRIP
+  MAINTENANCE
+}
+
+enum TripStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+
 
 
