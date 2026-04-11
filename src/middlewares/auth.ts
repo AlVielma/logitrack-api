@@ -7,7 +7,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     if (authHeader){
         const token = authHeader.split(" ")[1];
         if (!token) {
-            return sendError(res, 401, "Token missing");
+            return sendError(res, 401, "User not authenticated");
         }
         try{
             const decoded = verifyToken(token);
@@ -17,6 +17,6 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
             return sendError(res, 401, "Invalid token", error);
         }
     } else {
-        return sendError(res, 401, "Authorization header missing");
+        return sendError(res, 401, "User not authenticated");
     }
 }

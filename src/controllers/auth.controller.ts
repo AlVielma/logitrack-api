@@ -8,7 +8,13 @@ export class AuthController {
         try {
             const data: LoginRequest = req.body;
             const result = await AuthService.login(data);
-            sendSuccess(res, 200, result.message);
+            
+            if (!result.success) {
+                sendError(res, result.statusCode, result.message);
+                return;
+            }
+            
+            sendSuccess(res, result.statusCode, result.message, result.data);
         } catch (error) {
             sendError(res, 500, "Internal server error", error);
         }
@@ -18,7 +24,13 @@ export class AuthController {
         try {
             const data: VerifyOtpRequest = req.body;
             const result = await AuthService.verifyOtp(data);
-            sendSuccess(res, 200, "OTP verified successfully", result);
+            
+            if (!result.success) {
+                sendError(res, result.statusCode, result.message);
+                return;
+            }
+            
+            sendSuccess(res, result.statusCode, result.message, result.data);
         } catch (error) {
             sendError(res, 500, "Internal server error", error);
         }
