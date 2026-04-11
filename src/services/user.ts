@@ -36,7 +36,7 @@ export class UserService {
                 where,
                 skip,
                 take: limit,
-                select: { id: true, email: true, firstName: true, lastName: true, roleId: true, phone: true, isActive: true, role: true }
+                select: { id: true, email: true, firstName: true, lastName: true, roleId: true, phone: true, photoUrl: true, isActive: true, role: true }
             })
         ]);
 
@@ -51,7 +51,7 @@ export class UserService {
     static async getById(id: number): Promise<Response> {
         const user = await prisma.user.findUnique({
             where: { id },
-            select: { id: true, email: true, firstName: true, lastName: true, roleId: true, phone: true, isActive: true, role: true }
+            select: { id: true, email: true, firstName: true, lastName: true, roleId: true, phone: true, photoUrl: true, isActive: true, role: true }
         });
         
         if (!user) return { success: false, message: "User not found", statusCode: 404 };
