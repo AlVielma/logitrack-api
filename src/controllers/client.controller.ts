@@ -1,11 +1,21 @@
 import { Request, Response as ExResponse } from "express";
 import { sendSuccess, sendError } from "../utils/response";
 import { ClientService } from "../services/client";
+import { uploadToCloudinary } from "../utils/cloudinary";
 
 export class ClientController {
     static async create(req: Request, res: ExResponse): Promise<void> {
         try {
-            const data = req.body;
+            const data = req.body || {};
+            
+            const files = req.files as Express.Multer.File[];
+            const photoFile = files?.find(f => f.fieldname === 'photo');
+            
+            if (photoFile) {
+                const cloudinaryUrl = await uploadToCloudinary(photoFile.buffer, "clients");
+                data.photoUrl = cloudinaryUrl;
+            }
+
             const result = await ClientService.create(data);
             if (!result.success) {
                 sendError(res, result.statusCode, result.message);
@@ -51,7 +61,16 @@ export class ClientController {
     static async update(req: Request, res: ExResponse): Promise<void> {
         try {
             const id = Number(req.params.id);
-            const data = req.body;
+            const data = req.body || {};
+            
+            const files = req.files as Express.Multer.File[];
+            const photoFile = files?.find(f => f.fieldname === 'photo');
+            
+            if (photoFile) {
+                const cloudinaryUrl = await uploadToCloudinary(photoFile.buffer, "clients");
+                data.photoUrl = cloudinaryUrl;
+            }
+
             const result = await ClientService.update(id, data);
             if (!result.success) {
                 sendError(res, result.statusCode, result.message);

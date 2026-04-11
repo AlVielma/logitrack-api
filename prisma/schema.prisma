@@ -68,6 +68,7 @@ model Driver {
   sctLicense    String   @unique
   licenseType   String
   phone         String?
+  photoUrl      String?
   isActive      Boolean  @default(true)
   status        DriverStatus @default(AVAILABLE)
 
