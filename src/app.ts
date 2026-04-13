@@ -5,6 +5,8 @@ import userRoutes from './routes/user.routes';
 import clientRoutes from './routes/client.routes';
 import driverRoutes from './routes/driver.routes';
 import vehicleRoutes from './routes/vehicle.routes';
+import tripRoutes from './routes/trip.routes';
+import dashboardRoutes from './routes/dashboard.routes';
 import dotenv from 'dotenv';
 import { upload } from './middlewares/upload';
 
@@ -23,6 +25,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/drivers', driverRoutes);
 app.use('/api/vehicles', vehicleRoutes);
+app.use('/api/trips', tripRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('¡Hola desde mi servidor Express con TypeScript!');
